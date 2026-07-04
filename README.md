@@ -2,8 +2,8 @@
 
 A live data pipeline that tracks India's tech hiring market in near real-time — built end-to-end: scraping, database design, backend API, and a React dashboard.
 
-**Live demo:** _(add link once deployed)_
-**Backend API:** _(add link once deployed)_
+**Live demo:** _(comming soon)_
+**Backend API:** _(comming soon)_
 
 ---
 
