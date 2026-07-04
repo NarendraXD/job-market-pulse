@@ -35,7 +35,7 @@ Early skill extraction counted "node" and "node.js" as two separate skills, spli
 
 ## Key findings
 
-_(Update this section as more data comes in — these are from the first pull.)_
+_(i will Update this section as more data comes in — these are from the first pull.)_
 
 - **MERN Developer** postings are dominated by Node.js, React, MongoDB, and Express — closely matching the textbook stack.
 - **Data Analyst** postings lead with SQL, followed by general "data analysis," Python, Power BI, Excel, and ETL — SQL outranks any single BI tool, consistent with broader industry guidance.
@@ -73,8 +73,7 @@ npm install
 npm run dev
 ```
 
-Requires a `.env` file (not committed) with Adzuna API credentials and Postgres connection details — see `.env.example` _(add one if you want to be thorough)_.
-
+Requires a `.env` file (not committed) with Adzuna API credentials and Postgres connection details 
 ## Author
 
 Narendra Kumar Ahirwar ([@NarendraXD](https://github.com/NarendraXD))
