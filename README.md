@@ -73,7 +73,7 @@ npm install
 npm run dev
 ```
 
-Requires a `.env` file (not committed) with Adzuna API credentials and Postgres connection details
+Requires a `.env` file (not committed) with Adzuna API credentials and Postgres connection details — see `.env.example` _(add one if you want to be thorough)_.
 
 ## Author
 
