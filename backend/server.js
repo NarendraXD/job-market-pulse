@@ -81,6 +81,7 @@ app.get('/api/top-companies', async (req, res) => {
       SELECT c.name, COUNT(*) AS total
       FROM jobs j
       JOIN companies c ON j.company_id = c.company_id
+      WHERE c.name != 'Unknown'
       GROUP BY c.name
       ORDER BY total DESC
       LIMIT 10;
@@ -91,6 +92,5 @@ app.get('/api/top-companies', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch top companies' });
   }
 });
-
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`API running on http://localhost:${PORT}`));

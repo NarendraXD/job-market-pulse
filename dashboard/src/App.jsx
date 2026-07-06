@@ -49,6 +49,13 @@ function RingStat({ label, value, ringValue, ringMax, color }) {
 }
 
 function App() {
+  const [selectedRole, setSelectedRole] = useState('Data Analyst');
+  const [skills, setSkills] = useState([]);
+  const [allSkills, setAllSkills] = useState([]);
+  const [roleCounts, setRoleCounts] = useState([]);
+  const [dailyVolume, setDailyVolume] = useState([]);
+  const [topCompanies, setTopCompanies] = useState([]);
+
   const [activeSection, setActiveSection] = useState('overview');
   const [showSettings, setShowSettings] = useState(false);
   const [tickerPaused, setTickerPaused] = useState(false);
@@ -63,23 +70,24 @@ function App() {
     ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
-  const [selectedRole, setSelectedRole] = useState('Data Analyst');
-  const [skills, setSkills] = useState([]);
-  const [allSkills, setAllSkills] = useState([]);
-  const [roleCounts, setRoleCounts] = useState([]);
-  const [dailyVolume, setDailyVolume] = useState([]);
-  const [topCompanies, setTopCompanies] = useState([]);
-
   useEffect(() => {
     axios.get(`${API_BASE}/skills`, { params: { role: selectedRole } })
-      .then(res => setSkills(res.data));
+      .then(res => setSkills(res.data.map(s => ({ ...s, demand: Number(s.demand) }))));
   }, [selectedRole]);
 
   useEffect(() => {
-    axios.get(`${API_BASE}/skills`).then(res => setAllSkills(res.data));
-    axios.get(`${API_BASE}/role-counts`).then(res => setRoleCounts(res.data));
-    axios.get(`${API_BASE}/daily-volume`).then(res => setDailyVolume(res.data));
-    axios.get(`${API_BASE}/top-companies`).then(res => setTopCompanies(res.data));
+    axios.get(`${API_BASE}/skills`).then(res =>
+      setAllSkills(res.data.map(s => ({ ...s, demand: Number(s.demand) })))
+    );
+    axios.get(`${API_BASE}/role-counts`).then(res =>
+      setRoleCounts(res.data.map(r => ({ ...r, total: Number(r.total) })))
+    );
+    axios.get(`${API_BASE}/daily-volume`).then(res =>
+      setDailyVolume(res.data.map(d => ({ ...d, total: Number(d.total) })))
+    );
+    axios.get(`${API_BASE}/top-companies`).then(res =>
+      setTopCompanies(res.data.map(c => ({ ...c, total: Number(c.total) })))
+    );
   }, []);
 
   const totalJobs = roleCounts.reduce((sum, r) => sum + Number(r.total), 0);
@@ -123,7 +131,6 @@ function App() {
             <Building2 size={18} />
           </button>
         </nav>
-
         <div className="settings-wrap">
           <button
             className="nav-item nav-bottom"
@@ -151,7 +158,10 @@ function App() {
       <div className="app">
         {/* Ticker */}
         <div className="ticker-wrap">
-          <div className="ticker-track" style={{ animationPlayState: tickerPaused ? 'paused' : 'running' }}>
+          <div
+            className="ticker-track"
+            style={{ animationPlayState: tickerPaused ? 'paused' : 'running' }}
+          >
             {tickerItems.map((s, i) => (
               <span className="ticker-item" key={i}>
                 <span className="ticker-dot" />
@@ -217,7 +227,7 @@ function App() {
               <BarChart data={topCompanies} layout="vertical" margin={{ left: 0, right: 20 }}>
                 <CartesianGrid strokeDasharray="2 4" stroke="#1c2523" horizontal={false} />
                 <XAxis type="number" tick={{ fill: '#6b7f7a', fontSize: 11, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1c2523' }} tickLine={false} />
-                <YAxis type="category" dataKey="name" width={120} tick={{ fill: '#c9d4d1', fontSize: 11, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="name" width={120} interval={0} tick={{ fill: '#c9d4d1', fontSize: 11, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,176,32,0.05)' }} />
                 <Bar dataKey="total" fill="#ffb020" radius={[0, 2, 2, 0]} barSize={12} />
               </BarChart>
@@ -236,7 +246,7 @@ function App() {
             <BarChart data={skills} layout="vertical" margin={{ left: 0, right: 30 }}>
               <CartesianGrid strokeDasharray="2 4" stroke="#1c2523" horizontal={false} />
               <XAxis type="number" tick={{ fill: '#6b7f7a', fontSize: 11, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1c2523' }} tickLine={false} />
-              <YAxis type="category" dataKey="name" width={100} tick={{ fill: '#c9d4d1', fontSize: 11, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
+              <YAxis type="category" dataKey="name" width={100} interval={0} tick={{ fill: '#c9d4d1', fontSize: 11, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(74,222,128,0.05)' }} />
               <Bar dataKey="demand" fill="#4ade80" radius={[0, 2, 2, 0]} barSize={16} />
             </BarChart>
@@ -256,7 +266,13 @@ function App() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="2 4" stroke="#1c2523" vertical={false} />
-              <XAxis dataKey="snapshot_date" tick={{ fill: '#6b7f7a', fontSize: 11, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1c2523' }} tickLine={false} />
+              <XAxis
+                dataKey="snapshot_date"
+                tick={{ fill: '#6b7f7a', fontSize: 11, fontFamily: 'JetBrains Mono' }}
+                axisLine={{ stroke: '#1c2523' }}
+                tickLine={false}
+                tickFormatter={(date) => new Date(date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
+              />
               <YAxis tick={{ fill: '#6b7f7a', fontSize: 11, fontFamily: 'JetBrains Mono' }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
               <Area type="monotone" dataKey="total" stroke="#4ade80" strokeWidth={1.5} fill="url(#volGrad)" />
