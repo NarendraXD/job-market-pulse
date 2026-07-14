@@ -2,8 +2,8 @@
 
 A live data pipeline that tracks India's tech hiring market in near real-time — built end-to-end: scraping, database design, backend API, and a React dashboard.
 
-**Live demo:** _(comming soon)_
-**Backend API:** _(comming soon)_
+**Live demo:** https://job-market-pulse.vercel.app/
+**Backend API:** https://job-market-pulse-api.onrender.com/
 
 ---
 
@@ -35,12 +35,16 @@ Early skill extraction counted "node" and "node.js" as two separate skills, spli
 
 ## Key findings
 
-_(i will Update this section as more data comes in — these are from the first pull.)_
+Based on ~400 tracked postings across Data Analyst, MERN Developer, Full Stack Developer, and Software Engineer roles in India:
 
-- **MERN Developer** postings are dominated by Node.js, React, MongoDB, and Express — closely matching the textbook stack.
-- **Data Analyst** postings lead with SQL, followed by general "data analysis," Python, Power BI, Excel, and ETL — SQL outranks any single BI tool, consistent with broader industry guidance.
-- Roughly [X]% of postings disclose salary ranges (Adzuna's India listings often omit this) — tracked as its own metric rather than assumed.
+- **MERN Developer** postings are dominated by a near-textbook stack: Node.js, React, MongoDB, and Express all appear in 40%+ of postings.
+- **Data Analyst** postings lead with SQL (ahead of any single BI tool), followed by general "data analysis," Python, Power BI, Excel, and ETL — reinforcing that SQL remains the baseline expectation over any specific dashboarding tool.
+- Salary ranges are disclosed in only a small minority of India postings — tracked as its own metric rather than assumed, since Adzuna's India listings frequently omit compensation data.
+- Posting volume held steady (~395-400/day) across the tracked window, with tracking currently spanning multiple days — daily automation runs via Windows Task Scheduler, with a known gap period documented below.
 
+### A note on data collection reliability
+
+The daily scraper runs via a local Windows Task Scheduler job, which depends on the machine being on and unlocked at the scheduled time — a few days were missed when the laptop was off. This is a good illustration of why production data pipelines belong on always-on infrastructure (e.g. a scheduled cloud job) rather than a personal machine; a natural next step for this project.
 ## Tech stack
 
 - **Data collection:** Python, Adzuna API, `psycopg2`
