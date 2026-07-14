@@ -8,7 +8,7 @@ import axios from 'axios';
 import { LayoutDashboard, TrendingUp, Building2, Code2, Settings, Radio } from 'lucide-react';
 import './App.css';
 
-const API_BASE = 'http://localhost:4000/api';
+const API_BASE = 'https://job-market-pulse-api.onrender.com/api';
 const ROLES = ['Data Analyst', 'MERN Developer', 'Full Stack Developer', 'Software Engineer'];
 const COLORS = ['#ffb020', '#4ade80', '#60a5fa', '#f87171'];
 
