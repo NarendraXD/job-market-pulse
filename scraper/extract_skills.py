@@ -11,6 +11,8 @@ DB_CONFIG = {
     "dbname": os.getenv("DB_NAME"),
     "user": os.getenv("DB_USER"),
     "password": os.getenv("DB_PASSWORD"),
+    "sslmode": "require",
+    "connect_timeout": 10,
 }
 
 # Maps each detectable phrase -> canonical skill name.
@@ -99,15 +101,17 @@ def extract_skills_from_text(text):
 
 
 def main():
+    print("Connecting to database...")
     conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
+    print("Connected.")
 
     cur.execute("SELECT job_id, description FROM jobs")
     jobs = cur.fetchall()
     print(f"Scanning {len(jobs)} jobs for skills...")
 
     total_links = 0
-    for job_id, description in jobs:
+    for idx, (job_id, description) in enumerate(jobs, 1):
         matched = extract_skills_from_text(description)
         for skill_name in matched:
             skill_id = get_or_create_skill(cur, skill_name)
@@ -120,6 +124,9 @@ def main():
                 (job_id, skill_id),
             )
             total_links += 1
+        if idx % 50 == 0:
+            print(f"  ...{idx}/{len(jobs)} jobs scanned")
+            conn.commit()
 
     conn.commit()
     cur.close()

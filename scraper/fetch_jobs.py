@@ -3,6 +3,7 @@ import requests
 import psycopg2
 from datetime import date
 from dotenv import load_dotenv
+
 load_dotenv()
 
 APP_ID = os.getenv("ADZUNA_APP_ID")
@@ -14,6 +15,9 @@ DB_CONFIG = {
     "dbname": os.getenv("DB_NAME"),
     "user": os.getenv("DB_USER"),
     "password": os.getenv("DB_PASSWORD"),
+    "sslmode": "require",
+    "connect_timeout": 10,
+    "options": "-c statement_timeout=15000",
 }
 
 # The roles we're tracking — this maps our internal category name
@@ -41,7 +45,7 @@ def fetch_jobs_for_role(role_category, query, max_pages=2):
             "content-type": "application/json",
         }
         url = BASE_URL.format(page=page)
-        resp = requests.get(url, params=params)
+        resp = requests.get(url, params=params, timeout=15)
         if resp.status_code != 200:
             print(f"  [warn] {role_category} page {page} failed: {resp.status_code}")
             break
@@ -117,19 +121,24 @@ def insert_job(cur, job, role_category):
 
 
 def main():
+    print("Connecting to database...")
     conn = psycopg2.connect(**DB_CONFIG)
     conn.autocommit = False
     cur = conn.cursor()
+    print("Connected.")
 
     total_inserted = 0
     for role_category, query in ROLE_QUERIES.items():
         print(f"Fetching: {role_category} ...")
         jobs = fetch_jobs_for_role(role_category, query)
-        print(f"  -> {len(jobs)} jobs found")
-        for job in jobs:
+        print(f"  -> {len(jobs)} jobs found, inserting...")
+        for idx, job in enumerate(jobs, 1):
             insert_job(cur, job, role_category)
             total_inserted += 1
+            if idx % 10 == 0:
+                print(f"    ...{idx}/{len(jobs)} inserted")
         conn.commit()
+        print(f"  committed {role_category}")
 
     cur.close()
     conn.close()
